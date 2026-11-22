@@ -1,6 +1,6 @@
 {
   "name": "@superslate/avatar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Soft gradient SVG avatar generator with 6 shape families, 40 palettes, light/dark appearances, and OKLCH tone controls. Zero runtime dependencies.",
   "type": "module",
   "license": "MIT",
