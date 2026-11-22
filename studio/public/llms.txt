@@ -1,0 +1,22 @@
+# @superslate/avatar
+
+> Open-source, zero-dependency soft gradient SVG avatar generator by Superslate (https://superslate.dev).
+
+## Links
+
+- Live Studio: https://avatars.superslate.dev/
+- Source Repository: https://github.com/superslate-dev/avatar
+- npm Package: https://www.npmjs.com/package/@superslate/avatar
+- Superslate SaaS Boilerplate: https://superslate.dev/
+- Live Read-Only Demo: https://app.superslate.dev/
+
+## Features
+
+- 6 shape families: bloom, silk, flare, nova, void, jade
+- 40 curated 9-token color palettes
+- Dedicated light and dark appearances with OKLCH delta transfer
+- Global OKLCH tone controls (hue, relative chroma, lightness)
+- Deterministic geometry drift via variantId
+- Optional grapheme-safe initials overlay (up to 2 clusters)
+- Core SVG API, optional React component (@superslate/avatar/react), and CLI
+- MIT license, zero runtime dependencies

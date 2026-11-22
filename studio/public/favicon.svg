@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img">
+  <title>Superslate Avatar</title>
+  <defs>
+    <clipPath id="circle">
+      <circle cx="32" cy="32" r="32" />
+    </clipPath>
+    <radialGradient id="warm" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1" gradientTransform="translate(8 8) rotate(45) scale(52)">
+      <stop offset="0" stop-color="#fff1f1" />
+      <stop offset="0.48" stop-color="#ffaaaa" />
+      <stop offset="1" stop-color="#ffaaaa" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="hot" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1" gradientTransform="translate(54 54) rotate(-135) scale(44)">
+      <stop offset="0" stop-color="#fb4fbc" />
+      <stop offset="0.72" stop-color="#fb4fbc" stop-opacity="0.88" />
+      <stop offset="1" stop-color="#fb4fbc" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <g clip-path="url(#circle)">
+    <rect width="64" height="64" fill="#ffdedf" />
+    <rect width="64" height="64" fill="url(#warm)" />
+    <rect width="64" height="64" fill="url(#hot)" />
+    <path d="M-8 56 56-8 72 8 8 72Z" fill="#fee9f5" opacity="0.36" />
+  </g>
+</svg>

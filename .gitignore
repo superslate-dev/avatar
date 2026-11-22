@@ -1,0 +1,6 @@
+node_modules/
+dist/
+dist-studio/
+.wrangler/
+.DS_Store
+*.log

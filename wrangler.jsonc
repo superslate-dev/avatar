@@ -1,0 +1,13 @@
+{
+  "name": "superslate-avatars",
+  "compatibility_date": "2026-07-04",
+  "assets": {
+    "directory": "./dist-studio",
+    "not_found_handling": "single-page-application"
+  },
+  "workers_dev": false,
+  "observability": {"enabled": true},
+  "routes": [
+    {"pattern": "avatars.superslate.dev", "custom_domain": true}
+  ]
+}

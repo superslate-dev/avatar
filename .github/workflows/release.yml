@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish @superslate/avatar to npm
+    if: github.repository == 'superslate-dev/avatar'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.4'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: https://registry.npmjs.org
+      - name: Require an npm CLI with trusted-publishing support
+        run: npm install -g npm@12.2.1
+      - run: bun install --frozen-lockfile
+      - name: Require package version to match release tag
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          if [[ "v$version" != "${GITHUB_REF_NAME}" ]]; then
+            echo "package.json version $version does not match tag ${GITHUB_REF_NAME}" >&2
+            exit 1
+          fi
+      - run: bun run verify
+      - name: Skip already-published versions
+        id: guard
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          if npm view "@superslate/avatar@$version" version >/dev/null 2>&1; then
+            echo "@superslate/avatar@$version is already published; skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish via trusted publishing with provenance
+        if: steps.guard.outputs.skip != 'true'
+        run: npm publish --provenance --access public
+      - name: Verify published provenance attestation
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          url="https://registry.npmjs.org/-/npm/v1/attestations/@superslate%2Favatar@$version"
+          for attempt in $(seq 1 10); do
+            if curl -sfL "$url" >/dev/null; then
+              echo "Attestation published for @superslate/avatar@$version."
+              exit 0
+            fi
+            echo "Attestation not visible yet (attempt $attempt); retrying."
+            sleep 15
+          done
+          echo "No provenance attestation for @superslate/avatar@$version after 10 attempts." >&2
+          exit 1
