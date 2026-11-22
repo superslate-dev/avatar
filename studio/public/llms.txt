@@ -4,7 +4,7 @@
 
 ## Links
 
-- Live Studio: https://avatars.superslate.dev/
+- Live Studio: https://superslate.dev/avatars/
 - Source Repository: https://github.com/superslate-dev/avatar
 - npm Package: https://www.npmjs.com/package/@superslate/avatar
 - Superslate SaaS Boilerplate: https://superslate.dev/

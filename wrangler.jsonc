@@ -1,13 +1,11 @@
 {
   "name": "superslate-avatars",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-07-04",
   "assets": {
     "directory": "./dist-studio",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS"
   },
   "workers_dev": false,
-  "observability": {"enabled": true},
-  "routes": [
-    {"pattern": "avatars.superslate.dev", "custom_domain": true}
-  ]
+  "observability": {"enabled": true}
 }

@@ -6,7 +6,7 @@
 
 Zero-dependency soft gradient SVG avatar generator by [Superslate](https://superslate.dev/?ref=avatar-readme).
 
-**[Try the live studio →](https://avatars.superslate.dev)**
+**[Try the live studio →](https://superslate.dev/avatars/)**
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/superslate-dev/avatar/main/assets/preview-dark.svg">

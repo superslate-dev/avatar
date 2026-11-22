@@ -177,7 +177,7 @@ const html = `<!doctype html>
         </div>
       </div>
       <div class="foot">
-        <span>avatars.superslate.dev</span>
+        <span>superslate.dev/avatars</span>
         <span>npm i @superslate/avatar</span>
       </div>
     </div>

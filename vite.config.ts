@@ -2,6 +2,7 @@ import {resolve} from 'node:path'
 import {defineConfig} from 'vite'
 
 export default defineConfig({
+  base: '/avatars/',
   root: resolve(import.meta.dirname, 'studio'),
   publicDir: resolve(import.meta.dirname, 'studio/public'),
   build: {

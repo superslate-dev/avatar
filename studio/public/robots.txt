@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://avatars.superslate.dev/sitemap.xml

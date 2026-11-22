@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "author": "Supercollective <npm@supercollective.studio> (https://superslate.dev)",
-  "homepage": "https://avatars.superslate.dev",
+  "homepage": "https://superslate.dev/avatars/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/superslate-dev/avatar.git"
