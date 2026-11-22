@@ -26,8 +26,8 @@ const glow = (
 ): DarkGlowAnchors => ({narrow, medium, wide})
 
 export const darkShapeAnchors: Record<ShapeId, DarkShapeAnchors> = {
-  nova: {
-    lightReference: 'aurora-pink',
+  zenith: {
+    lightReference: 'electric-iris',
     layers: {
       base: a('#6550b9', 'cool'),
       light: a('#ffffff', 'light'),
@@ -35,8 +35,8 @@ export const darkShapeAnchors: Record<ShapeId, DarkShapeAnchors> = {
     },
     frameGlow: glow(a('#ffffff', 'light'), a('#0958ca', 'cool'), a('#6aa7ff', 'cool')),
   },
-  void: {
-    lightReference: 'rose-milk',
+  beam: {
+    lightReference: 'blush-quartz',
     layers: {
       base: a('#031a05', 'dark'),
       core: a('#4229ff', 'cool'),
@@ -44,8 +44,8 @@ export const darkShapeAnchors: Record<ShapeId, DarkShapeAnchors> = {
     },
     frameGlow: glow(a('#000000', 'dark'), a('#71abff', 'cool'), a('#71abff', 'cool')),
   },
-  jade: {
-    lightReference: 'jade-cream',
+  horizon: {
+    lightReference: 'verdigris',
     layers: {
       base1: a('#031a05', 'dark'),
       base2: a('#08b98d', 'lobe'),
@@ -55,8 +55,8 @@ export const darkShapeAnchors: Record<ShapeId, DarkShapeAnchors> = {
     },
     frameGlow: glow(a('#ffffff', 'light'), a('#00c48c', 'beam'), a('#5fec83', 'beam')),
   },
-  bloom: {
-    lightReference: 'rose-milk',
+  prism: {
+    lightReference: 'blush-quartz',
     layers: {
       base: a('#ff7a7c', 'base'),
       blob: a('#df1c77', 'lobe'),
@@ -64,8 +64,8 @@ export const darkShapeAnchors: Record<ShapeId, DarkShapeAnchors> = {
     },
     frameGlow: glow(a('#e22775', 'accent'), a('#ff25a1', 'accent'), a('#ffb58e', 'warm')),
   },
-  silk: {
-    lightReference: 'rose-milk',
+  veil: {
+    lightReference: 'blush-quartz',
     layers: {
       dark: a('#0047c3', 'dark'),
       base: a('#b4a3ff', 'base'),
@@ -76,8 +76,8 @@ export const darkShapeAnchors: Record<ShapeId, DarkShapeAnchors> = {
     frameGlow: glow(a('#b58aff', 'accent'), a('#1a00df', 'cool'), a('#4430ff', 'cool')),
     innerGlow: glow(a('#ff9de7', 'accent'), a('#0047c3', 'dark'), a('#0047c3', 'dark')),
   },
-  flare: {
-    lightReference: 'peach-cream',
+  ember: {
+    lightReference: 'solar-amber',
     layers: {
       dark: a('#000000', 'dark'),
       base: a('#ff7700', 'lobe'),

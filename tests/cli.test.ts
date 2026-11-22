@@ -33,9 +33,9 @@ describe('superslate-avatar CLI', () => {
       const svgRes = runCli([
         'svg',
         '--shape',
-        'flare',
+        'ember',
         '--palette',
-        'aurora-pink',
+        'electric-iris',
         '--appearance',
         'dark',
         '--initials',

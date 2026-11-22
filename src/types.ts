@@ -1,4 +1,4 @@
-export type ShapeId = 'bloom' | 'silk' | 'flare' | 'nova' | 'void' | 'jade'
+export type ShapeId = 'prism' | 'veil' | 'ember' | 'zenith' | 'beam' | 'horizon'
 
 export type AvatarAppearance = 'light' | 'dark'
 

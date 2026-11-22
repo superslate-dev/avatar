@@ -46,7 +46,7 @@ function usage(): string {
   return `superslate-avatar
 
 Commands:
-  svg   --shape bloom --palette rose-milk --out avatar.svg
+  svg   --shape prism --palette blush-quartz --out avatar.svg
   grid  --out presets.html
 
 Options:
@@ -77,8 +77,8 @@ async function main(): Promise<void> {
     const out = value(args, 'out')
     if (!out) throw new Error('Missing --out')
     const avatar = createAvatar({
-      shape: (value(args, 'shape') as ShapeId | undefined) ?? 'bloom',
-      palette: value(args, 'palette') ?? 'rose-milk',
+      shape: (value(args, 'shape') as ShapeId | undefined) ?? 'prism',
+      palette: value(args, 'palette') ?? 'blush-quartz',
       variantId: value(args, 'variant') ?? 'cli',
       drift: numberValue(args, 'drift') ?? 0,
       size: numberValue(args, 'size') ?? 64,

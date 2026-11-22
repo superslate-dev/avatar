@@ -12,7 +12,7 @@
 
 ## Features
 
-- 6 shape families: bloom, silk, flare, nova, void, jade
+- 6 shape families: prism, veil, ember, zenith, beam, horizon
 - 40 curated 9-token color palettes
 - Dedicated light and dark appearances with OKLCH delta transfer
 - Global OKLCH tone controls (hue, relative chroma, lightness)

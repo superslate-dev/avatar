@@ -1,24 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img">
   <title>Superslate Avatar</title>
   <defs>
-    <clipPath id="circle">
+    <clipPath id="ss-fav-clip">
       <circle cx="32" cy="32" r="32" />
     </clipPath>
-    <radialGradient id="warm" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1" gradientTransform="translate(8 8) rotate(45) scale(52)">
-      <stop offset="0" stop-color="#fff1f1" />
-      <stop offset="0.48" stop-color="#ffaaaa" />
-      <stop offset="1" stop-color="#ffaaaa" stop-opacity="0" />
+    <radialGradient id="ss-fav-base" gradientUnits="userSpaceOnUse" cx="14" cy="12" r="62">
+      <stop offset="0" stop-color="#1e4b99" />
+      <stop offset="0.52" stop-color="#0a1c3b" />
+      <stop offset="1" stop-color="#040914" />
     </radialGradient>
-    <radialGradient id="hot" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1" gradientTransform="translate(54 54) rotate(-135) scale(44)">
-      <stop offset="0" stop-color="#fb4fbc" />
-      <stop offset="0.72" stop-color="#fb4fbc" stop-opacity="0.88" />
-      <stop offset="1" stop-color="#fb4fbc" stop-opacity="0" />
+    <radialGradient id="ss-fav-cobalt" gradientUnits="userSpaceOnUse" cx="18" cy="16" r="44">
+      <stop offset="0" stop-color="#dbeaff" />
+      <stop offset="0.34" stop-color="#76b0ff" />
+      <stop offset="0.72" stop-color="#3574e2" stop-opacity="0.78" />
+      <stop offset="1" stop-color="#3574e2" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="ss-fav-iris" gradientUnits="userSpaceOnUse" cx="52" cy="52" r="42">
+      <stop offset="0" stop-color="#6b6cff" />
+      <stop offset="0.55" stop-color="#3f54d8" stop-opacity="0.72" />
+      <stop offset="1" stop-color="#3f54d8" stop-opacity="0" />
     </radialGradient>
   </defs>
-  <g clip-path="url(#circle)">
-    <rect width="64" height="64" fill="#ffdedf" />
-    <rect width="64" height="64" fill="url(#warm)" />
-    <rect width="64" height="64" fill="url(#hot)" />
-    <path d="M-8 56 56-8 72 8 8 72Z" fill="#fee9f5" opacity="0.36" />
+  <g clip-path="url(#ss-fav-clip)">
+    <rect width="64" height="64" fill="url(#ss-fav-base)" />
+    <rect width="64" height="64" fill="url(#ss-fav-cobalt)" />
+    <rect width="64" height="64" fill="url(#ss-fav-iris)" />
+    <path d="M-8 54 54-8 68 6 6 68Z" fill="#dcecff" opacity="0.22" />
+    <circle cx="32" cy="32" r="31.25" fill="none" stroke="#a6cbff" stroke-opacity="0.35" stroke-width="1.5" />
   </g>
 </svg>

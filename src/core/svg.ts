@@ -1,7 +1,7 @@
 import {getPalette} from '../data/palettes'
 import {getShape} from '../data/shapes'
 import {darkShapeAnchors} from '../data/dark-appearance'
-import {darkFlarePaletteOverrides} from '../data/dark-flare-palettes'
+import {darkEmberPaletteOverrides} from '../data/dark-ember-palettes'
 import {appearanceColorOverrides} from '../data/appearance-overrides'
 import type {
   AvatarAppearance,
@@ -15,7 +15,7 @@ import {derivePalette, getPaletteMainHue} from '../color/tone'
 import {
   deriveAppearancePalette,
   deriveDarkAnchorColor,
-  deriveDarkFlareLayerColor,
+  deriveDarkEmberLayerColor,
   deriveDarkGlow,
 } from '../color/appearance'
 import {
@@ -87,21 +87,21 @@ interface DarkEffectProfile {
 }
 
 const darkShapeToneDefaults: Partial<Record<ShapeId, ToneOptions>> = {
-  flare: {lightness: -0.04},
-  bloom: {lightness: -0.1},
+  ember: {lightness: -0.04},
+  prism: {lightness: -0.1},
 }
 
 const baseGlows = {
-  bloom: {white: '#ffffff', glow1: '#fee9f5', glow2: '#fee9f5'},
-  silk: {white: '#ffffff', glow1: '#aec6cf', glow2: '#aec6cf'},
-  flare: {white: '#ffffff', glow1: '#ffdfda', glow2: '#ffbe74'},
-  nova: {white: '#ffffff', glow1: '#88b9ff', glow2: '#7cb2ff'},
-  void: {white: '#ffffff', glow1: '#71abff', glow2: '#71abff'},
-  jade: {white: '#ffffff', glow1: '#42cba9', glow2: '#42cba9'},
+  prism: {white: '#ffffff', glow1: '#fee9f5', glow2: '#fee9f5'},
+  veil: {white: '#ffffff', glow1: '#aec6cf', glow2: '#aec6cf'},
+  ember: {white: '#ffffff', glow1: '#ffdfda', glow2: '#ffbe74'},
+  zenith: {white: '#ffffff', glow1: '#88b9ff', glow2: '#7cb2ff'},
+  beam: {white: '#ffffff', glow1: '#71abff', glow2: '#71abff'},
+  horizon: {white: '#ffffff', glow1: '#42cba9', glow2: '#42cba9'},
 } as const
 
 const darkEffectProfiles: Record<ShapeId, DarkEffectProfile> = {
-  nova: {
+  zenith: {
     frame: [
       {blur: 5.052632, dy: -1.122807},
       {blur: 1.122807, spread: 1.016887},
@@ -109,7 +109,7 @@ const darkEffectProfiles: Record<ShapeId, DarkEffectProfile> = {
     ],
     layerBlurs: [5.614035, 8.421053],
   },
-  void: {
+  beam: {
     frame: [
       {blur: 5.614035},
       {blur: 2.245614, spread: 1.015873},
@@ -117,7 +117,7 @@ const darkEffectProfiles: Record<ShapeId, DarkEffectProfile> = {
     ],
     layerBlurs: [13.714285, 5.079366],
   },
-  jade: {
+  horizon: {
     frame: [
       {blur: 5.614035},
       {blur: 1.684211, spread: 1.016887},
@@ -125,7 +125,7 @@ const darkEffectProfiles: Record<ShapeId, DarkEffectProfile> = {
     ],
     layerBlurs: [13.727973, 5.084435],
   },
-  bloom: {
+  prism: {
     frame: [
       {blur: 5.614035, alpha: 1},
       {blur: 2.245614, spread: 1.016887, alpha: 1},
@@ -133,7 +133,7 @@ const darkEffectProfiles: Record<ShapeId, DarkEffectProfile> = {
     ],
     layerBlurs: [3.224692, 1.074898],
   },
-  silk: {
+  veil: {
     frame: [
       {blur: 5.925926},
       {blur: 1.481482, spread: 1.015873},
@@ -146,7 +146,7 @@ const darkEffectProfiles: Record<ShapeId, DarkEffectProfile> = {
     ],
     layerBlurs: [10.370371, 7.626652],
   },
-  flare: {
+  ember: {
     frame: [
       {blur: 5.614035, alpha: 0.72},
       {blur: 2.245614, spread: 1.016887, alpha: 0.58},
@@ -224,16 +224,16 @@ function paletteForType(
   appearance: AvatarAppearance,
   referencePalette: PaletteColors,
   chromaFloorScale: number,
-  manualFlarePalette?: PaletteColors,
+  manualEmberPalette?: PaletteColors,
 ): LayerPalette {
   if (appearance === 'dark') {
     const anchors = darkShapeAnchors[type].layers
     const color = (name: string): string =>
       deriveDarkAnchorColor(anchors[name]!, palette, referencePalette, chromaFloorScale)
-    if (type === 'bloom') {
+    if (type === 'prism') {
       return {bg: color('base'), blob: color('blob'), hot: color('hot'), pale: color('base')}
     }
-    if (type === 'silk') {
+    if (type === 'veil') {
       return {
         dark: color('dark'),
         base: color('base'),
@@ -244,32 +244,32 @@ function paletteForType(
         cool: color('cream2'),
       }
     }
-    if (type === 'flare') {
-      if (manualFlarePalette) {
+    if (type === 'ember') {
+      if (manualEmberPalette) {
         return {
-          dark: manualFlarePalette.dark,
-          base: manualFlarePalette.lobe,
-          cream1: manualFlarePalette.pale,
-          cream2: manualFlarePalette.light,
-          hot1: manualFlarePalette.warm,
-          hot2: manualFlarePalette.accent,
+          dark: manualEmberPalette.dark,
+          base: manualEmberPalette.lobe,
+          cream1: manualEmberPalette.pale,
+          cream2: manualEmberPalette.light,
+          hot1: manualEmberPalette.warm,
+          hot2: manualEmberPalette.accent,
         }
       }
-      const flareColor = (name: string): string =>
-        deriveDarkFlareLayerColor(anchors[name]!, palette, referencePalette, chromaFloorScale)
+      const emberColor = (name: string): string =>
+        deriveDarkEmberLayerColor(anchors[name]!, palette, referencePalette, chromaFloorScale)
       return {
-        dark: flareColor('dark'),
-        base: flareColor('base'),
-        cream1: flareColor('cream1'),
-        cream2: flareColor('cream2'),
-        hot1: flareColor('hot1'),
-        hot2: flareColor('hot2'),
+        dark: emberColor('dark'),
+        base: emberColor('base'),
+        cream1: emberColor('cream1'),
+        cream2: emberColor('cream2'),
+        hot1: emberColor('hot1'),
+        hot2: emberColor('hot2'),
       }
     }
-    if (type === 'nova') {
+    if (type === 'zenith') {
       return {base: color('base'), white: color('light'), hot: color('hot'), cool: color('base')}
     }
-    if (type === 'void') {
+    if (type === 'beam') {
       return {base: color('base'), blue: color('core'), green: color('beam'), glow: color('beam')}
     }
     return {
@@ -282,10 +282,10 @@ function paletteForType(
       glow: color('glow1'),
     }
   }
-  if (type === 'bloom') {
+  if (type === 'prism') {
     return {bg: palette.base, blob: palette.lobe, hot: palette.accent, pale: palette.pale}
   }
-  if (type === 'silk') {
+  if (type === 'veil') {
     return {
       dark: palette.dark,
       base: palette.base,
@@ -294,7 +294,7 @@ function paletteForType(
       cool: palette.cool,
     }
   }
-  if (type === 'flare') {
+  if (type === 'ember') {
     return {
       dark: palette.dark,
       base: palette.lobe,
@@ -304,10 +304,10 @@ function paletteForType(
       hot2: palette.accent,
     }
   }
-  if (type === 'nova') {
+  if (type === 'zenith') {
     return {base: palette.cool, white: palette.light, hot: palette.accent, cool: palette.beam}
   }
-  if (type === 'void') {
+  if (type === 'beam') {
     return {base: palette.dark, blue: palette.cool, green: palette.beam, glow: palette.accent}
   }
   return {
@@ -443,18 +443,18 @@ function applyBuiltInAppearanceOverride(
   colors: Record<string, string> | undefined,
 ): void {
   if (!colors) return
-  if (study.type === 'bloom' && 'bg' in study.p) {
+  if (study.type === 'prism' && 'bg' in study.p) {
     study.p.bg = colors['layer.1'] ?? study.p.bg
     study.p.blob = colors['layer.2'] ?? study.p.blob
     study.p.hot = colors['layer.3'] ?? study.p.hot
-  } else if (study.type === 'flare' && 'hot1' in study.p) {
+  } else if (study.type === 'ember' && 'hot1' in study.p) {
     study.p.dark = colors['layer.1'] ?? study.p.dark
     study.p.base = colors['layer.2'] ?? study.p.base
     study.p.cream1 = colors['layer.3'] ?? study.p.cream1
     study.p.cream2 = colors['layer.4'] ?? study.p.cream2
     study.p.hot1 = colors['layer.5'] ?? study.p.hot1
     study.p.hot2 = colors['layer.6'] ?? study.p.hot2
-  } else if (study.type === 'jade' && 'grad1' in study.p) {
+  } else if (study.type === 'horizon' && 'grad1' in study.p) {
     study.p.base1 = colors['layer.1'] ?? study.p.base1
     study.p.base2 = colors['layer.2'] ?? study.p.base2
     study.p.milk = colors['layer.3'] ?? study.p.milk
@@ -577,7 +577,7 @@ function frame(id: string, cx: number, cy: number, size: number): string {
 function defsFor(id: string, study: Study): string {
   const p = study.p
   const gradients: string[] = []
-  if (study.type === 'flare' && 'hot1' in p) {
+  if (study.type === 'ember' && 'hot1' in p) {
     gradients.push(`
       <linearGradient id="cream-${id}" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="${p.cream1}"/><stop offset="100%" stop-color="${p.cream2}"/>
@@ -586,27 +586,27 @@ function defsFor(id: string, study: Study): string {
         <stop offset="0%" stop-color="${p.hot1}"/><stop offset="100%" stop-color="${p.hot2}"/>
       </linearGradient>`)
   }
-  if (study.type === 'silk' && 'cream1' in p && p.cream1 && p.cream2) {
+  if (study.type === 'veil' && 'cream1' in p && p.cream1 && p.cream2) {
     gradients.push(`
-      <radialGradient id="silk-${id}" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(-0.03 -15.355) rotate(89.9503) scale(36.7093 41.0794)">
+      <radialGradient id="veil-${id}" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(-0.03 -15.355) rotate(89.9503) scale(36.7093 41.0794)">
         <stop offset="0%" stop-color="${p.cream1}"/><stop offset="100%" stop-color="${p.cream2}"/>
       </radialGradient>`)
   }
-  if (study.type === 'jade' && 'grad1' in p) {
+  if (study.type === 'horizon' && 'grad1' in p) {
     const x1 = study.appearance === 'dark' ? '1' : '0'
     const x2 = study.appearance === 'dark' ? '0' : '1'
     gradients.push(`
-      <linearGradient id="jade-${id}" x1="${x1}" y1="0" x2="${x2}" y2="0">
+      <linearGradient id="horizon-${id}" x1="${x1}" y1="0" x2="${x2}" y2="0">
         <stop offset="0%" stop-color="${p.grad1}"/><stop offset="100%" stop-color="${p.grad2}"/>
       </linearGradient>`)
     if (p.base1 && p.base2) {
       gradients.push(`
-        <linearGradient id="jade-base-${id}" x1="${x1}" y1="0" x2="${x2}" y2="0">
+        <linearGradient id="horizon-base-${id}" x1="${x1}" y1="0" x2="${x2}" y2="0">
           <stop offset="0%" stop-color="${p.base1}"/><stop offset="100%" stop-color="${p.base2}"/>
         </linearGradient>`)
     }
   }
-  if (study.type === 'bloom' && 'hot' in p) {
+  if (study.type === 'prism' && 'hot' in p) {
     gradients.push(`
       <radialGradient id="hot-${id}" cx="102%" cy="50%" r="58%">
         <stop offset="0%" stop-color="${p.hot}" stop-opacity="1"/>
@@ -692,7 +692,7 @@ function r(
   return rect(cx + dx * scale, cy + dy * scale, w, h, rx, fill, options, scale, tweak, key)
 }
 
-function renderBloom(
+function renderPrism(
   id: string,
   p: Extract<LayerPalette, {bg: string}>,
   glow: GlowPalette,
@@ -711,7 +711,7 @@ function renderBloom(
     ${r(cx, cy, -31.47, -31.42, 76.53, 76.53, 38, `url(#hot-${id})`, {rotate: 45, blur: dark ? undefined : 'blur-1', filterId: dark ? `dark-layer-2-${id}` : undefined, opacity: dark ? 1 : 0.9}, scale, tweak, 'hot-b')}`
 }
 
-function renderSilk(
+function renderVeil(
   id: string,
   p: Extract<LayerPalette, {warm: string}>,
   glow: GlowPalette,
@@ -722,7 +722,7 @@ function renderSilk(
   scale: number,
   tweak: (key: string) => Tweak,
 ): string {
-  const cream = p.cream1 && p.cream2 ? `url(#silk-${id})` : p.cream
+  const cream = p.cream1 && p.cream2 ? `url(#veil-${id})` : p.cream
   return `
     ${r(cx, cy, 0, 0, 64, 64, 16.25, p.dark, {fixed: true, filterId: dark ? `dark-surface-${id}` : undefined}, scale, tweak, 'dark')}
     ${dark ? '' : softInset(cx, cy, 64, 64, 16.25, innerGlow ?? glow, {opacity: 0.58}, scale)}
@@ -732,7 +732,7 @@ function renderSilk(
     ${r(cx, cy, 0.03, -13.65, 47.79, 42.71, 50.84, cream, {blur: dark ? undefined : 'blur-8', filterId: dark ? `dark-layer-2-${id}` : undefined, opacity: dark ? 1 : 0.92}, scale, tweak, 'cream')}`
 }
 
-function renderFlare(
+function renderEmber(
   id: string,
   p: Extract<LayerPalette, {cream1: string}>,
   glow: GlowPalette,
@@ -752,7 +752,7 @@ function renderFlare(
     ${r(cx, cy, 7, 10, 44, 44, 120, `url(#hot-${id})`, {blur: dark ? undefined : 'blur-8', filterId: dark ? `dark-layer-2-${id}` : undefined, opacity: dark ? 1 : 0.84}, scale, tweak, 'hot')}`
 }
 
-function renderNova(
+function renderZenith(
   id: string,
   p: Extract<LayerPalette, {white: string}>,
   glow: GlowPalette,
@@ -769,7 +769,7 @@ function renderNova(
     ${r(cx, cy, 0, -28.35, 58.39, 64, 25.26, p.hot, {rotate: 180, blur: dark ? undefined : 'blur-8', filterId: dark ? `dark-layer-2-${id}` : undefined, opacity: dark ? 1 : 0.86}, scale, tweak, 'hot')}`
 }
 
-function renderVoid(
+function renderBeam(
   id: string,
   p: Extract<LayerPalette, {blue: string}>,
   glow: GlowPalette,
@@ -786,7 +786,7 @@ function renderVoid(
     ${r(cx, cy, -0.11, -0.11, 44.89, 18.26, 5.08, p.green, {rotate: 180, blur: dark ? undefined : 'blur-5', filterId: dark ? `dark-layer-2-${id}` : undefined, opacity: dark ? 1 : 0.9, blend: 'plus-lighter'}, scale, tweak, 'green')}`
 }
 
-function renderJade(
+function renderHorizon(
   id: string,
   p: Extract<LayerPalette, {milk: string}>,
   glow: GlowPalette,
@@ -796,12 +796,12 @@ function renderJade(
   scale: number,
   tweak: (key: string) => Tweak,
 ): string {
-  const base = p.base1 && p.base2 ? `url(#jade-base-${id})` : p.base
+  const base = p.base1 && p.base2 ? `url(#horizon-base-${id})` : p.base
   return `
     ${r(cx, cy, 0.03, 0.03, 75.25, 75.25, 16.27, base, {rotate: -90, fixed: true}, scale, tweak, 'base')}
     ${dark ? '' : softInset(cx, cy, 75.25, 75.25, 16.27, glow, {rotate: -90, opacity: 0.36}, scale)}
     ${r(cx, cy, 0.03, 28.5, 56.95, 54.91, 10.17, p.milk, {rotate: -90, blur: dark ? undefined : 'blur-14', filterId: dark ? `dark-layer-1-${id}` : undefined, opacity: dark ? 1 : 0.9}, scale, tweak, 'milk')}
-    ${r(cx, cy, 1, 26, 52, 52, 120, `url(#jade-${id})`, {rotate: -90, blur: dark ? undefined : 'blur-5', filterId: dark ? `dark-layer-2-${id}` : undefined, opacity: dark ? 1 : 0.92}, scale, tweak, 'glow')}`
+    ${r(cx, cy, 1, 26, 52, 52, 120, `url(#horizon-${id})`, {rotate: -90, blur: dark ? undefined : 'blur-5', filterId: dark ? `dark-layer-2-${id}` : undefined, opacity: dark ? 1 : 0.92}, scale, tweak, 'glow')}`
 }
 
 function renderBody(
@@ -813,22 +813,22 @@ function renderBody(
   tweak: (key: string) => Tweak,
 ): string {
   const dark = study.appearance === 'dark'
-  if (study.type === 'bloom') {
-    return renderBloom(id, study.p as Extract<LayerPalette, {bg: string}>, study.glow, dark, cx, cy, scale, tweak)
+  if (study.type === 'prism') {
+    return renderPrism(id, study.p as Extract<LayerPalette, {bg: string}>, study.glow, dark, cx, cy, scale, tweak)
   }
-  if (study.type === 'silk') {
-    return renderSilk(id, study.p as Extract<LayerPalette, {warm: string}>, study.glow, study.innerGlow, dark, cx, cy, scale, tweak)
+  if (study.type === 'veil') {
+    return renderVeil(id, study.p as Extract<LayerPalette, {warm: string}>, study.glow, study.innerGlow, dark, cx, cy, scale, tweak)
   }
-  if (study.type === 'flare') {
-    return renderFlare(id, study.p as Extract<LayerPalette, {cream1: string}>, study.glow, study.innerGlow, dark, cx, cy, scale, tweak)
+  if (study.type === 'ember') {
+    return renderEmber(id, study.p as Extract<LayerPalette, {cream1: string}>, study.glow, study.innerGlow, dark, cx, cy, scale, tweak)
   }
-  if (study.type === 'nova') {
-    return renderNova(id, study.p as Extract<LayerPalette, {white: string}>, study.glow, dark, cx, cy, scale, tweak)
+  if (study.type === 'zenith') {
+    return renderZenith(id, study.p as Extract<LayerPalette, {white: string}>, study.glow, dark, cx, cy, scale, tweak)
   }
-  if (study.type === 'void') {
-    return renderVoid(id, study.p as Extract<LayerPalette, {blue: string}>, study.glow, dark, cx, cy, scale, tweak)
+  if (study.type === 'beam') {
+    return renderBeam(id, study.p as Extract<LayerPalette, {blue: string}>, study.glow, dark, cx, cy, scale, tweak)
   }
-  return renderJade(id, study.p as Extract<LayerPalette, {milk: string}>, study.glow, dark, cx, cy, scale, tweak)
+  return renderHorizon(id, study.p as Extract<LayerPalette, {milk: string}>, study.glow, dark, cx, cy, scale, tweak)
 }
 
 function renderSvg(
@@ -876,7 +876,7 @@ export function createAvatarInternal(
   options: AvatarOptions = {},
   slotOverride?: Record<string, string>,
 ): AvatarResultWithSlots {
-  const shape = getShape(options.shape ?? 'bloom')
+  const shape = getShape(options.shape ?? 'prism')
   const palette = getPalette(options.palette)
   const appearance = options.appearance ?? 'light'
   const darkReference = getPalette(darkShapeAnchors[shape.id].lightReference)
@@ -904,14 +904,14 @@ export function createAvatarInternal(
     appearance === 'dark' && !hasDarkToneAdjustment
       ? {...palette.colors}
       : derivePalette(palette, effectiveTone)
-  const manualFlareOverride =
-    appearance === 'dark' && shape.id === 'flare'
-      ? darkFlarePaletteOverrides[palette.id]
+  const manualEmberOverride =
+    appearance === 'dark' && shape.id === 'ember'
+      ? darkEmberPaletteOverrides[palette.id]
       : undefined
-  const manualFlarePalette = manualFlareOverride
+  const manualEmberPalette = manualEmberOverride
     ? options.tone
-      ? derivePalette({...palette, colors: {...palette.colors, ...manualFlareOverride}}, options.tone)
-      : {...palette.colors, ...manualFlareOverride}
+      ? derivePalette({...palette, colors: {...palette.colors, ...manualEmberOverride}}, options.tone)
+      : {...palette.colors, ...manualEmberOverride}
     : undefined
   const chromaFloorScale = clamp(effectiveTone?.chroma ?? 1, 0, 1)
   const colors = deriveAppearancePalette(sourceColors, appearance, darkReference, chromaFloorScale)
@@ -929,7 +929,7 @@ export function createAvatarInternal(
       appearance,
       darkReference.colors,
       chromaFloorScale,
-      manualFlarePalette,
+      manualEmberPalette,
     ),
     glow: glowForAppearance(
       shape.id,

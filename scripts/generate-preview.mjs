@@ -2,14 +2,14 @@ import {mkdir, writeFile} from 'node:fs/promises'
 import {createAvatar, shapes} from '../dist/index.js'
 
 const PALETTES = [
-  'rose-milk',
-  'peach-cream',
-  'mint-milk',
-  'aurora-pink',
-  'lilac-silk',
-  'blue-cream',
-  'amber-dusk',
-  'magenta-void',
+  'blush-quartz',
+  'solar-amber',
+  'glacier-mint',
+  'electric-iris',
+  'cobalt-iris',
+  'cobalt-frost',
+  'ochre-twilight',
+  'ultraviolet',
 ]
 
 const TILE = 64

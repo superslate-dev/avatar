@@ -15,7 +15,7 @@ Zero-dependency soft gradient SVG avatar generator by [Superslate](https://super
 
 Renders crisp 64×64 circular gradient avatars from a deterministic design grammar:
 
-- 6 shape families: Bloom, Silk, Flare, Nova, Void, Jade
+- 6 shape families: Prism, Veil, Ember, Zenith, Beam, Horizon
 - 40 curated palette presets
 - OKLCH tone controls for global hue, relative chroma, and lightness shifts
 - Dedicated light and dark appearances with OKLCH palette derivation
@@ -41,8 +41,8 @@ bun add @superslate/avatar
 import {createAvatar} from '@superslate/avatar'
 
 const avatar = createAvatar({
-  shape: 'bloom',
-  palette: 'rose-milk',
+  shape: 'prism',
+  palette: 'blush-quartz',
   tone: {
     hue: 320,
     chroma: 0.9,
@@ -65,8 +65,8 @@ import {Avatar} from '@superslate/avatar/react'
 export function UserAvatar() {
   return (
     <Avatar
-      shape="nova"
-      palette="aurora-pink"
+      shape="zenith"
+      palette="electric-iris"
       tone={{hue: 280, chroma: 0.9}}
       variantId="user-123"
       drift={8}
@@ -98,8 +98,8 @@ const colors = derivePalette(palettes[0], {
 
 ```ts
 const avatar = createAvatar({
-  shape: 'flare',
-  palette: 'sunset-punch',
+  shape: 'ember',
+  palette: 'scarlet-ember',
   appearance: 'dark',
   initials: 'SS',
   background: null,
@@ -111,8 +111,8 @@ Initials are capped at two grapheme clusters via `Intl.Segmenter`. They default 
 ## CLI
 
 ```bash
-npx @superslate/avatar svg --shape bloom --palette rose-milk --out avatar.svg
-npx @superslate/avatar svg --shape bloom --palette rose-milk --appearance dark --out avatar-dark.svg
+npx @superslate/avatar svg --shape prism --palette blush-quartz --out avatar.svg
+npx @superslate/avatar svg --shape prism --palette blush-quartz --appearance dark --out avatar-dark.svg
 npx @superslate/avatar grid --out presets.html
 ```
 

@@ -6,8 +6,8 @@ describe('@superslate/avatar/react', () => {
   it('renders an inline SVG inside a sized span wrapper', () => {
     const html = renderToStaticMarkup(
       <Avatar
-        shape="nova"
-        palette="aurora-pink"
+        shape="zenith"
+        palette="electric-iris"
         appearance="dark"
         variantId="user-42"
         drift={8}

@@ -68,7 +68,7 @@ export function deriveDarkAnchorColor(
   })
 }
 
-export function deriveDarkFlareLayerColor(
+export function deriveDarkEmberLayerColor(
   anchor: DarkColorAnchor,
   palette: PaletteColors,
   referencePalette: PaletteColors,

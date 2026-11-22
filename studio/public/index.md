@@ -4,7 +4,7 @@
 
 ## Features
 
-- 6 shape families: Bloom, Silk, Flare, Nova, Void, Jade
+- 6 shape families: Prism, Veil, Ember, Zenith, Beam, Horizon
 - 40 curated 9-token color palettes
 - Dedicated light and dark appearances with OKLCH palette derivation
 - Global OKLCH tone controls (`hue`, relative `chroma`, `lightness`)
@@ -25,8 +25,8 @@ npm install @superslate/avatar
 import {createAvatar} from '@superslate/avatar'
 
 const {svg} = createAvatar({
-  shape: 'bloom',
-  palette: 'rose-milk',
+  shape: 'prism',
+  palette: 'blush-quartz',
   tone: {hue: 320, chroma: 0.9, lightness: 0},
   appearance: 'dark',
   variantId: 'a1f3',
@@ -41,8 +41,8 @@ const {svg} = createAvatar({
 import {Avatar} from '@superslate/avatar/react'
 
 <Avatar
-  shape="bloom"
-  palette="rose-milk"
+  shape="prism"
+  palette="blush-quartz"
   variantId="a1f3"
   drift={8}
   size={64}

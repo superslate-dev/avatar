@@ -10,7 +10,7 @@ import {
   shapes,
 } from '../src'
 import {darkShapeAnchors} from '../src/data/dark-appearance'
-import {darkFlarePaletteOverrides} from '../src/data/dark-flare-palettes'
+import {darkEmberPaletteOverrides} from '../src/data/dark-ember-palettes'
 import {appearanceColorOverrides} from '../src/data/appearance-overrides'
 import {deriveDarkAnchorColor} from '../src/color/appearance'
 
@@ -34,7 +34,7 @@ describe('@superslate/avatar', () => {
   })
 
   it('creates a fixed 64x64 SVG by default', () => {
-    const avatar = createAvatar({shape: 'bloom', palette: 'rose-milk'})
+    const avatar = createAvatar({shape: 'prism', palette: 'blush-quartz'})
     expect(avatar.svg).toContain('width="64"')
     expect(avatar.svg).toContain('height="64"')
     expect(avatar.svg).toContain('<clipPath')
@@ -43,7 +43,7 @@ describe('@superslate/avatar', () => {
 
   it('renders escaped initials above the filtered artwork', () => {
     const avatar = createAvatar({
-      shape: 'flare',
+      shape: 'ember',
       appearance: 'dark',
       background: null,
       initials: '<&Z',
@@ -68,8 +68,8 @@ describe('@superslate/avatar', () => {
 
   it('uses size as display scale without recalculating internal geometry', () => {
     const options = {
-      shape: 'flare' as const,
-      palette: 'rose-milk',
+      shape: 'ember' as const,
+      palette: 'blush-quartz',
       appearance: 'dark' as const,
       variantId: 'scale',
       drift: 8,
@@ -94,8 +94,8 @@ describe('@superslate/avatar', () => {
 
   it('applies zero relative chroma to every painted dark color', () => {
     const avatar = createAvatar({
-      shape: 'flare',
-      palette: 'lemon-mint',
+      shape: 'ember',
+      palette: 'citron-dew',
       appearance: 'dark',
       tone: {chroma: 0},
       background: null,
@@ -106,9 +106,9 @@ describe('@superslate/avatar', () => {
   })
 
   it('keeps variant output deterministic', () => {
-    const first = createAvatar({shape: 'void', palette: 'teal-void', variantId: 'same', drift: 12}).svg
-    const second = createAvatar({shape: 'void', palette: 'teal-void', variantId: 'same', drift: 12}).svg
-    const third = createAvatar({shape: 'void', palette: 'teal-void', variantId: 'other', drift: 12}).svg
+    const first = createAvatar({shape: 'beam', palette: 'abyssal-teal', variantId: 'same', drift: 12}).svg
+    const second = createAvatar({shape: 'beam', palette: 'abyssal-teal', variantId: 'same', drift: 12}).svg
+    const third = createAvatar({shape: 'beam', palette: 'abyssal-teal', variantId: 'other', drift: 12}).svg
     expect(first).toBe(second)
     expect(first).not.toBe(third)
   })
@@ -119,20 +119,20 @@ describe('@superslate/avatar', () => {
 
   it('renders the configured dark anchors for the reference palette', () => {
     const references: Record<string, string> = {
-      bloom: 'rose-milk',
-      silk: 'rose-milk',
-      flare: 'peach-cream',
-      nova: 'aurora-pink',
-      void: 'rose-milk',
-      jade: 'jade-cream',
+      prism: 'blush-quartz',
+      veil: 'blush-quartz',
+      ember: 'solar-amber',
+      zenith: 'electric-iris',
+      beam: 'blush-quartz',
+      horizon: 'verdigris',
     }
     const expected: Record<string, string[]> = {
-      bloom: ['#ffeaeb', '#ffa0a0', '#eb00a9', '#e22775', '#ff25a1', '#ffb58e'],
-      silk: ['#0047c3', '#b4a3ff', '#9086ff', '#1400ae', '#6d56ff', '#4430ff'],
-      flare: ['#9d3a00', '#e87d00', '#ffdc78', '#ffe842', '#e9af00', '#e92b00', '#fa9e00', '#ffc2b9', '#ededed'],
-      nova: ['#6550b9', '#ffffff', '#ff0084', '#6aa7ff'],
-      void: ['#031a05', '#4229ff', '#57b565', '#000000'],
-      jade: ['#00a181', '#ceff71', '#fcf500', '#26ca9d', '#004536', '#fefefe'],
+      prism: ['#ffeaeb', '#ffa0a0', '#eb00a9', '#e22775', '#ff25a1', '#ffb58e'],
+      veil: ['#0047c3', '#b4a3ff', '#9086ff', '#1400ae', '#6d56ff', '#4430ff'],
+      ember: ['#9d3a00', '#e87d00', '#ffdc78', '#ffe842', '#e9af00', '#e92b00', '#fa9e00', '#ffc2b9', '#ededed'],
+      zenith: ['#6550b9', '#ffffff', '#ff0084', '#6aa7ff'],
+      beam: ['#031a05', '#4229ff', '#57b565', '#000000'],
+      horizon: ['#00a181', '#ceff71', '#fcf500', '#26ca9d', '#004536', '#fefefe'],
     }
     for (const shape of shapes) {
       const svg = createAvatar({
@@ -153,8 +153,8 @@ describe('@superslate/avatar', () => {
     expect(vivid).toBeGreaterThan(muted)
 
     const reference = createAvatar({
-      shape: 'flare',
-      palette: 'peach-cream',
+      shape: 'ember',
+      palette: 'solar-amber',
       appearance: 'dark',
       background: null,
     }).svg
@@ -166,10 +166,10 @@ describe('@superslate/avatar', () => {
 
   it('preserves every shape layer geometry between light and dark appearances', () => {
     for (const shape of shapes) {
-      const light = createAvatar({shape: shape.id, palette: 'sunset-punch', variantId: 'theme', drift: 0}).svg
+      const light = createAvatar({shape: shape.id, palette: 'scarlet-ember', variantId: 'theme', drift: 0}).svg
       const dark = createAvatar({
         shape: shape.id,
-        palette: 'sunset-punch',
+        palette: 'scarlet-ember',
         variantId: 'theme',
         drift: 0,
         appearance: 'dark',
@@ -180,68 +180,68 @@ describe('@superslate/avatar', () => {
   })
 
   it('keeps browser-faithful dark effect structure and full layer opacity', () => {
-    const bloom = createAvatar({shape: 'bloom', palette: 'rose-milk', appearance: 'dark', background: null, drift: 0}).svg
-    const silk = createAvatar({shape: 'silk', palette: 'rose-milk', appearance: 'dark', background: null, drift: 0}).svg
-    const flare = createAvatar({shape: 'flare', palette: 'peach-cream', appearance: 'dark', background: null, drift: 0}).svg
+    const prism = createAvatar({shape: 'prism', palette: 'blush-quartz', appearance: 'dark', background: null, drift: 0}).svg
+    const veil = createAvatar({shape: 'veil', palette: 'blush-quartz', appearance: 'dark', background: null, drift: 0}).svg
+    const ember = createAvatar({shape: 'ember', palette: 'solar-amber', appearance: 'dark', background: null, drift: 0}).svg
 
-    expect(bloom).toMatch(/filter="url\(#dark-frame-av-[a-z0-9]+\)"/)
-    expect(bloom).not.toContain('feTurbulence')
-    expect(bloom).toContain('stdDeviation="3.224692"')
-    expect(bloom).toContain('flood-color="#ffb58e" flood-opacity="1"')
-    expect(bloom).toContain('flood-color="#ff25a1" flood-opacity="1"')
-    expect(bloom).toContain('flood-color="#e22775" flood-opacity="1"')
-    expect(bloom).not.toContain('opacity="0.860"')
-    expect(bloom).toContain('<rect width="64" height="64" rx="32" fill="#ffffff"/>')
-    expect(bloom).toContain('mask="url(#edge-mask-')
-    expect(bloom).toContain('stop-opacity="0"')
-    expect(bloom).not.toContain('shape-rendering="geometricPrecision"')
-    expect(flare).toContain('flood-color="#fa9e00" flood-opacity="0.72"')
-    expect(flare).toContain('flood-color="#ffc2b9" flood-opacity="0.58"')
-    expect(flare).toContain('flood-color="#ededed" flood-opacity="0.32"')
-    expect(flare).toContain('stdDeviation="5.614035"')
-    expect(flare).toContain('stdDeviation="2.245614"')
-    expect(flare).toContain('stdDeviation="1.122807"')
-    expect(flare).not.toContain('feTurbulence')
-    expect(silk).toContain('gradientTransform="translate(-0.03 -15.355) rotate(89.9503) scale(36.7093 41.0794)"')
-    expect(silk).toContain('stdDeviation="12.698412"')
+    expect(prism).toMatch(/filter="url\(#dark-frame-av-[a-z0-9]+\)"/)
+    expect(prism).not.toContain('feTurbulence')
+    expect(prism).toContain('stdDeviation="3.224692"')
+    expect(prism).toContain('flood-color="#ffb58e" flood-opacity="1"')
+    expect(prism).toContain('flood-color="#ff25a1" flood-opacity="1"')
+    expect(prism).toContain('flood-color="#e22775" flood-opacity="1"')
+    expect(prism).not.toContain('opacity="0.860"')
+    expect(prism).toContain('<rect width="64" height="64" rx="32" fill="#ffffff"/>')
+    expect(prism).toContain('mask="url(#edge-mask-')
+    expect(prism).toContain('stop-opacity="0"')
+    expect(prism).not.toContain('shape-rendering="geometricPrecision"')
+    expect(ember).toContain('flood-color="#fa9e00" flood-opacity="0.72"')
+    expect(ember).toContain('flood-color="#ffc2b9" flood-opacity="0.58"')
+    expect(ember).toContain('flood-color="#ededed" flood-opacity="0.32"')
+    expect(ember).toContain('stdDeviation="5.614035"')
+    expect(ember).toContain('stdDeviation="2.245614"')
+    expect(ember).toContain('stdDeviation="1.122807"')
+    expect(ember).not.toContain('feTurbulence')
+    expect(veil).toContain('gradientTransform="translate(-0.03 -15.355) rotate(89.9503) scale(36.7093 41.0794)"')
+    expect(veil).toContain('stdDeviation="12.698412"')
   })
 
   it('reports the colors actually painted by the selected dark shape', () => {
-    const flare = createAvatar({shape: 'flare', palette: 'cherry-cola', appearance: 'dark', background: null})
-    const light = createAvatar({shape: 'flare', palette: 'cherry-cola', appearance: 'light', background: null})
-    expect(flare.usedColors).toHaveLength(9)
+    const ember = createAvatar({shape: 'ember', palette: 'garnet-velvet', appearance: 'dark', background: null})
+    const light = createAvatar({shape: 'ember', palette: 'garnet-velvet', appearance: 'light', background: null})
+    expect(ember.usedColors).toHaveLength(9)
     expect(light.usedColors).toHaveLength(9)
-    for (const color of flare.usedColors) expect(flare.svg).toContain(color)
+    for (const color of ember.usedColors) expect(ember.svg).toContain(color)
     for (const color of light.usedColors) expect(light.svg).toContain(color)
-    expect(flare.usedColors).not.toContain(flare.colors.beam)
+    expect(ember.usedColors).not.toContain(ember.colors.beam)
   })
 
   it('keeps derived middle colors above their relative-chroma floors', () => {
-    const cherryCola = palettes.find(palette => palette.id === 'cherry-cola')!
-    const derived = deriveAppearancePalette(cherryCola, 'dark')
+    const garnetVelvet = palettes.find(palette => palette.id === 'garnet-velvet')!
+    const derived = deriveAppearancePalette(garnetVelvet, 'dark')
     expect(relativeSrgbChroma(hexToOklch(derived.lobe))).toBeGreaterThanOrEqual(0.98)
     expect(relativeSrgbChroma(hexToOklch(derived.accent))).toBeGreaterThanOrEqual(0.98)
     expect(relativeSrgbChroma(hexToOklch(derived.beam))).toBeGreaterThanOrEqual(0.98)
   })
 
-  it('keeps Flare derivative layers semantically separated', () => {
-    const flare = createAvatar({shape: 'flare', palette: 'lavender-lime', appearance: 'dark', background: null})
-    expect(new Set(flare.usedColors.slice(0, 6)).size).toBeGreaterThanOrEqual(5)
+  it('keeps Ember derivative layers semantically separated', () => {
+    const ember = createAvatar({shape: 'ember', palette: 'acid-lilac', appearance: 'dark', background: null})
+    expect(new Set(ember.usedColors.slice(0, 6)).size).toBeGreaterThanOrEqual(5)
   })
 
-  it('derives every visible dark Flare layer from its matching light layer', () => {
+  it('derives every visible dark Ember layer from its matching light layer', () => {
     for (const palette of palettes) {
-      if (appearanceColorOverrides[`flare:${palette.id}:dark`]) continue
-      const light = createAvatar({shape: 'flare', palette, appearance: 'light', background: null, drift: 0})
-      const dark = createAvatar({shape: 'flare', palette, appearance: 'dark', background: null, drift: 0})
+      if (appearanceColorOverrides[`ember:${palette.id}:dark`]) continue
+      const light = createAvatar({shape: 'ember', palette, appearance: 'light', background: null, drift: 0})
+      const dark = createAvatar({shape: 'ember', palette, appearance: 'dark', background: null, drift: 0})
 
       for (const index of [1, 2, 4, 5]) {
         const lightColor = hexToOklch(light.usedColors[index]!)
         const darkColor = hexToOklch(dark.usedColors[index]!)
         expect(darkColor.l).toBeLessThan(lightColor.l)
         if (
-          palette.id !== 'peach-cream' &&
-          !darkFlarePaletteOverrides[palette.id] &&
+          palette.id !== 'solar-amber' &&
+          !darkEmberPaletteOverrides[palette.id] &&
           lightColor.c >= 0.006 &&
           darkColor.c >= 0.03 &&
           darkColor.l > 0.06
@@ -252,13 +252,13 @@ describe('@superslate/avatar', () => {
     }
   })
 
-  it('uses hand-authored dark Flare palettes for all forty palettes', () => {
-    expect(Object.keys(darkFlarePaletteOverrides)).toHaveLength(40)
-    expect(Object.keys(darkFlarePaletteOverrides).sort()).toEqual(palettes.map(palette => palette.id).sort())
-    for (const [palette, colors] of Object.entries(darkFlarePaletteOverrides)) {
-      const flare = createAvatar({shape: 'flare', palette, appearance: 'dark', background: null, drift: 0})
-      const override = appearanceColorOverrides[`flare:${palette}:dark`]?.colors
-      expect(flare.usedColors.slice(0, 6)).toEqual(
+  it('uses hand-authored dark Ember palettes for all forty palettes', () => {
+    expect(Object.keys(darkEmberPaletteOverrides)).toHaveLength(40)
+    expect(Object.keys(darkEmberPaletteOverrides).sort()).toEqual(palettes.map(palette => palette.id).sort())
+    for (const [palette, colors] of Object.entries(darkEmberPaletteOverrides)) {
+      const ember = createAvatar({shape: 'ember', palette, appearance: 'dark', background: null, drift: 0})
+      const override = appearanceColorOverrides[`ember:${palette}:dark`]?.colors
+      expect(ember.usedColors.slice(0, 6)).toEqual(
         override
           ? [1, 2, 3, 4, 5, 6].map(index => override[`layer.${index}`]!)
           : [colors!.dark, colors!.lobe, colors!.pale, colors!.light, colors!.warm, colors!.accent],
@@ -271,7 +271,7 @@ describe('@superslate/avatar', () => {
     for (const [key, override] of Object.entries(appearanceColorOverrides)) {
       const [shape, palette, appearance] = key.split(':')
       const avatar = createAvatar({
-        shape: shape as 'bloom' | 'flare' | 'jade',
+        shape: shape as 'prism' | 'ember' | 'horizon',
         palette,
         appearance: appearance as 'dark',
         background: null,
@@ -279,7 +279,7 @@ describe('@superslate/avatar', () => {
       })
       const colors = override.colors
       const expectedLayers =
-        shape === 'bloom'
+        shape === 'prism'
           ? [
               colors['layer.1'],
               colors['layer.2'],
@@ -301,10 +301,10 @@ describe('@superslate/avatar', () => {
     }
   })
 
-  it('maps dark Flare layers to their matching light roles', () => {
-    const flare = darkShapeAnchors.flare
+  it('maps dark Ember layers to their matching light roles', () => {
+    const ember = darkShapeAnchors.ember
     expect(
-      Object.fromEntries(Object.entries(flare.layers).map(([name, anchor]) => [name, anchor.token])),
+      Object.fromEntries(Object.entries(ember.layers).map(([name, anchor]) => [name, anchor.token])),
     ).toEqual({
       dark: 'dark',
       base: 'lobe',
@@ -313,7 +313,7 @@ describe('@superslate/avatar', () => {
       hot1: 'warm',
       hot2: 'accent',
     })
-    expect([flare.frameGlow.narrow.token, flare.frameGlow.medium.token, flare.frameGlow.wide.token]).toEqual([
+    expect([ember.frameGlow.narrow.token, ember.frameGlow.medium.token, ember.frameGlow.wide.token]).toEqual([
       'light',
       'pale',
       'beam',
@@ -321,40 +321,40 @@ describe('@superslate/avatar', () => {
   })
 
   it('keeps a derived palette token hues consistent across dark shapes', () => {
-    const lemonMint = palettes.find(palette => palette.id === 'lemon-mint')!
+    const citronDew = palettes.find(palette => palette.id === 'citron-dew')!
     const samples = [
-      {shape: 'flare' as const, layer: 'cream1'},
-      {shape: 'silk' as const, layer: 'warm'},
-      {shape: 'bloom' as const, layer: 'blob'},
+      {shape: 'ember' as const, layer: 'cream1'},
+      {shape: 'veil' as const, layer: 'warm'},
+      {shape: 'prism' as const, layer: 'blob'},
     ]
 
     for (const sample of samples) {
       const shape = darkShapeAnchors[sample.shape]
       const anchor = shape.layers[sample.layer]!
       const reference = palettes.find(palette => palette.id === shape.lightReference)!
-      const derived = hexToOklch(deriveDarkAnchorColor(anchor, lemonMint.colors, reference.colors))
-      const target = hexToOklch(lemonMint.colors[anchor.token])
+      const derived = hexToOklch(deriveDarkAnchorColor(anchor, citronDew.colors, reference.colors))
+      const target = hexToOklch(citronDew.colors[anchor.token])
       expect(hueDistance(derived.h, target.h)).toBeLessThan(4)
     }
   })
 
   it('preserves light palette contrast in matching dark layers', () => {
-    const blueCream = palettes.find(palette => palette.id === 'blue-cream')!
-    const cottonCandy = palettes.find(palette => palette.id === 'cotton-candy')!
-    const lightDelta = Math.abs(hexToOklch(blueCream.colors.lobe).l - hexToOklch(cottonCandy.colors.lobe).l)
-    const blueCreamDark = createAvatar({shape: 'flare', palette: blueCream, appearance: 'dark', background: null})
-    const cottonCandyDark = createAvatar({shape: 'flare', palette: cottonCandy, appearance: 'dark', background: null})
+    const cobaltFrost = palettes.find(palette => palette.id === 'cobalt-frost')!
+    const pastelPrism = palettes.find(palette => palette.id === 'pastel-prism')!
+    const lightDelta = Math.abs(hexToOklch(cobaltFrost.colors.lobe).l - hexToOklch(pastelPrism.colors.lobe).l)
+    const cobaltFrostDark = createAvatar({shape: 'ember', palette: cobaltFrost, appearance: 'dark', background: null})
+    const pastelPrismDark = createAvatar({shape: 'ember', palette: pastelPrism, appearance: 'dark', background: null})
     const darkDelta = Math.abs(
-      hexToOklch(blueCreamDark.usedColors[1]!).l - hexToOklch(cottonCandyDark.usedColors[1]!).l,
+      hexToOklch(cobaltFrostDark.usedColors[1]!).l - hexToOklch(pastelPrismDark.usedColors[1]!).l,
     )
 
     expect(darkDelta / lightDelta).toBeGreaterThan(0.8)
   })
 
-  it('uses the authored dark Flare preset as its default', () => {
-    const flare = createAvatar({shape: 'flare', palette: 'blue-cream', appearance: 'dark', background: null})
-    const colors = darkFlarePaletteOverrides['blue-cream']!
-    expect(flare.usedColors.slice(0, 6)).toEqual([
+  it('uses the authored dark Ember preset as its default', () => {
+    const ember = createAvatar({shape: 'ember', palette: 'cobalt-frost', appearance: 'dark', background: null})
+    const colors = darkEmberPaletteOverrides['cobalt-frost']!
+    expect(ember.usedColors.slice(0, 6)).toEqual([
       colors.dark,
       colors.lobe,
       colors.pale,
@@ -364,16 +364,16 @@ describe('@superslate/avatar', () => {
     ])
   })
 
-  it('uses the tuned dark Bloom derivative as its default', () => {
-    const defaultBloom = createAvatar({shape: 'bloom', palette: 'lavender-lime', appearance: 'dark', background: null})
-    const tunedBloom = createAvatar({
-      shape: 'bloom',
-      palette: 'lavender-lime',
+  it('uses the tuned dark Prism derivative as its default', () => {
+    const defaultPrism = createAvatar({shape: 'prism', palette: 'acid-lilac', appearance: 'dark', background: null})
+    const tunedPrism = createAvatar({
+      shape: 'prism',
+      palette: 'acid-lilac',
       appearance: 'dark',
       tone: {chroma: 1, lightness: -0.1},
       background: null,
     })
-    expect(defaultBloom.usedColors).toEqual(tunedBloom.usedColors)
+    expect(defaultPrism.usedColors).toEqual(tunedPrism.usedColors)
   })
 
   it('uses a dark default canvas while preserving explicit transparency', () => {

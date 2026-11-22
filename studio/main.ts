@@ -1,3 +1,5 @@
+import '@fontsource-variable/geist'
+import '@fontsource-variable/geist-mono'
 import {
   createAvatar,
   getPalette,
@@ -9,8 +11,15 @@ import {
 import {createAvatarInternal, normalizeInitials} from '../src/core/svg'
 import {randomFromString} from '../src/core/random'
 import {darkShapeAnchors} from '../src/data/dark-appearance'
-import {darkFlarePaletteOverrides} from '../src/data/dark-flare-palettes'
-import type {AvatarAppearance, AvatarOptions, PalettePreset, ShapeId, ShapePreset, ToneOptions} from '../src/types'
+import {darkEmberPaletteOverrides} from '../src/data/dark-ember-palettes'
+import type {
+  AvatarAppearance,
+  AvatarOptions,
+  PalettePreset,
+  ShapeId,
+  ShapePreset,
+  ToneOptions,
+} from '../src/types'
 
 export interface StudioState {
   shape: ShapeId
@@ -26,16 +35,26 @@ export interface StudioState {
 export interface GradientLabHandle {
   renderIfOpen(): void
   onResize(): void
-  overrideFor(shape: ShapeId, palette: string, appearance: AvatarAppearance): Record<string, string> | undefined
+  overrideFor(
+    shape: ShapeId,
+    palette: string,
+    appearance: AvatarAppearance,
+  ): Record<string, string> | undefined
 }
 
 const darkShapeToneDefaults: Partial<Record<ShapeId, ToneOptions>> = {
-  flare: {lightness: -0.04},
-  bloom: {lightness: -0.1},
+  ember: {lightness: -0.04},
+  prism: {lightness: -0.1},
 }
 
 const THEME_STORAGE_KEY = 'ss-avatar-theme'
 const PACKAGE_NAME = '@superslate/avatar'
+const DEFAULT_SHAPE: ShapeId = 'prism'
+const DEFAULT_PALETTE = palettes.some(p => p.id === 'cobalt-frost')
+  ? 'cobalt-frost'
+  : palettes.some(p => p.id === 'blush-quartz')
+    ? 'blush-quartz'
+    : palettes[0]!.id
 
 function byId<T extends HTMLElement = HTMLElement>(id: string): T {
   const element = document.getElementById(id)
@@ -44,23 +63,24 @@ function byId<T extends HTMLElement = HTMLElement>(id: string): T {
 }
 
 const root = document.documentElement
-const compactLayout = matchMedia('(max-width: 860px)')
+const compactLayout = matchMedia('(max-width: 640px)')
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
 let gradientLab: GradientLabHandle | null = null
 
 export function currentAppearance(): AvatarAppearance {
-  return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+  return root.getAttribute('data-theme') === 'light' ? 'light' : 'dark'
 }
 
-function avatarDisplaySize(slot: 'preview' | 'grid' | 'shape' | 'mark'): number {
-  if (slot === 'preview') return compactLayout.matches ? 64 : 76
-  if (slot === 'grid') return compactLayout.matches ? 56 : 60
+function avatarDisplaySize(slot: 'preview' | 'grid' | 'shape' | 'mini'): number {
+  if (slot === 'preview') return compactLayout.matches ? 96 : 112
+  if (slot === 'grid') return compactLayout.matches ? 56 : 64
   if (slot === 'shape') return 34
-  return 19
+  return 22
 }
 
 function renderAvatar(options: AvatarOptions) {
-  const shape = options.shape ?? 'bloom'
-  const palette = typeof options.palette === 'string' ? options.palette : 'rose-milk'
+  const shape = options.shape ?? DEFAULT_SHAPE
+  const palette = typeof options.palette === 'string' ? options.palette : DEFAULT_PALETTE
   const appearance = options.appearance ?? currentAppearance()
   const override = gradientLab?.overrideFor(shape, palette, appearance)
   return override ? createAvatarInternal(options, override) : createAvatar(options)
@@ -68,24 +88,38 @@ function renderAvatar(options: AvatarOptions) {
 
 let avatarRenderSerial = 0
 function imgFor(opts: AvatarOptions): string {
-  const isolated = opts.variantId == null ? {...opts, variantId: `ui-${avatarRenderSerial++}`} : opts
+  const isolated =
+    opts.variantId == null ? {...opts, variantId: `ui-${avatarRenderSerial++}`} : opts
   return renderAvatar({...isolated, appearance: currentAppearance(), background: null}).svg
 }
 
-const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
-if (savedTheme === 'light' || savedTheme === 'dark') {
-  root.setAttribute('data-theme', savedTheme)
-} else if (matchMedia('(prefers-color-scheme: dark)').matches) {
-  root.setAttribute('data-theme', 'dark')
+const themeColorMeta = document.getElementById('theme-color-meta')
+const themeSwitchEl = byId('theme-switch')
+const appearanceReadoutEl = byId('appearance-readout')
+
+function applyTheme(theme: AvatarAppearance, persist = false): void {
+  root.setAttribute('data-theme', theme)
+  if (persist) {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme)
+    } catch {}
+  }
+  themeColorMeta?.setAttribute('content', theme === 'light' ? '#f6f8fb' : '#04080c')
+  appearanceReadoutEl.textContent = theme
+  themeSwitchEl.querySelectorAll<HTMLButtonElement>('[data-theme-value]').forEach(button => {
+    const active = button.dataset.themeValue === theme
+    button.classList.toggle('active', active)
+    button.setAttribute('aria-pressed', String(active))
+  })
 }
 
-const themeToggle = byId<HTMLButtonElement>('theme-toggle')
-function syncThemeToggle(): void {
-  const isDark = root.getAttribute('data-theme') === 'dark'
-  themeToggle.setAttribute('aria-pressed', String(isDark))
-  themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme')
-}
-syncThemeToggle()
+let initialTheme: AvatarAppearance = 'dark'
+try {
+  if (localStorage.getItem(THEME_STORAGE_KEY) === 'light') {
+    initialTheme = 'light'
+  }
+} catch {}
+applyTheme(initialTheme, false)
 
 function defaultTone(
   shape: ShapeId,
@@ -94,9 +128,10 @@ function defaultTone(
 ): {hue: number; chroma: number; lightness: number} {
   const main = getPaletteMainHue(getPalette(palette).colors)
   const reference = darkShapeAnchors[shape].lightReference
-  const authoredFlare = appearance === 'dark' && shape === 'flare' && Boolean(darkFlarePaletteOverrides[palette])
+  const authoredEmber =
+    appearance === 'dark' && shape === 'ember' && Boolean(darkEmberPaletteOverrides[palette])
   const bias =
-    appearance === 'dark' && palette !== reference && !authoredFlare
+    appearance === 'dark' && palette !== reference && !authoredEmber
       ? darkShapeToneDefaults[shape]
       : undefined
   return {
@@ -106,10 +141,10 @@ function defaultTone(
   }
 }
 
-const initialTone = defaultTone('bloom', 'rose-milk')
+const initialTone = defaultTone(DEFAULT_SHAPE, DEFAULT_PALETTE)
 export const state: StudioState = {
-  shape: 'bloom',
-  palette: 'rose-milk',
+  shape: DEFAULT_SHAPE,
+  palette: DEFAULT_PALETTE,
   ...initialTone,
   drift: 8,
   variantId: 'a1f3',
@@ -180,7 +215,11 @@ const chipsEl = byId('chips')
 const gridScroll = byId('grid-scroll')
 const shuffleGridBtn = byId<HTMLButtonElement>('shuffle-grid')
 const countEl = byId('count')
-const mainEl = document.querySelector<HTMLElement>('.main')!
+const catalogEl = byId('catalog')
+const workbenchEl = byId('workbench')
+const activeMiniBtn = byId<HTMLButtonElement>('active-mini')
+const activeMiniAvEl = byId('active-mini-av')
+const activeMiniLabelEl = byId('active-mini-label')
 let gridAvatarObserver: IntersectionObserver | null = null
 
 function newGridSeed(): string {
@@ -234,7 +273,13 @@ chipDefs.forEach(c => {
     if (filter === c.id) return
     filter = c.id
     renderGrid()
-    mainEl.scrollTop = 0
+    const rect = catalogEl.getBoundingClientRect()
+    if (rect.top < 0) {
+      catalogEl.scrollIntoView({
+        behavior: reducedMotion.matches ? 'auto' : 'smooth',
+        block: 'start',
+      })
+    }
   })
   chipsEl.appendChild(button)
 })
@@ -243,11 +288,18 @@ function scrollToSelectedAvatar(): void {
   const selected = gridScroll.querySelector('.cell.sel')
   if (!selected) return
   selected.scrollIntoView({
-    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    behavior: reducedMotion.matches ? 'auto' : 'smooth',
     block: 'center',
     inline: 'nearest',
   })
 }
+
+activeMiniBtn.addEventListener('click', () => {
+  workbenchEl.scrollIntoView({
+    behavior: reducedMotion.matches ? 'auto' : 'smooth',
+    block: 'start',
+  })
+})
 
 shuffleGridBtn.addEventListener('click', () => {
   allOrderSeed = newGridSeed()
@@ -303,7 +355,7 @@ function observeGridAvatars(): void {
         gridAvatarObserver?.unobserve(entry.target)
       })
     },
-    {root: mainEl, rootMargin: '480px 0px'},
+    {root: null, rootMargin: '480px 0px'},
   )
   cells.forEach(cell => gridAvatarObserver?.observe(cell))
 }
@@ -316,7 +368,7 @@ export function renderGrid(): void {
     const group = document.createElement('div')
     group.className = 'group group-all'
     const grid = document.createElement('div')
-    grid.className = 'grid'
+    grid.className = 'grid catalog-lattice'
     allCombos.forEach(({shape, pal}) => {
       count += 1
       grid.appendChild(createGridCell(shape, pal, true))
@@ -327,9 +379,9 @@ export function renderGrid(): void {
     const shape = getShape(filter)
     const group = document.createElement('div')
     group.className = 'group'
-    group.innerHTML = `<div class="group-head"><h3>${shape.name}</h3><p>${shape.description}</p></div>`
+    group.innerHTML = `<div class="group-head"><h2>${shape.name}</h2><p>${shape.description}</p></div>`
     const grid = document.createElement('div')
-    grid.className = 'grid'
+    grid.className = 'grid catalog-lattice'
     palettes.forEach(pal => {
       count += 1
       grid.appendChild(createGridCell(shape, pal, false))
@@ -358,7 +410,7 @@ shapes.forEach(s => {
   button.className = 'shape-btn'
   button.dataset.shape = s.id
   button.setAttribute('aria-pressed', 'false')
-  button.innerHTML = `<span class="av"></span><span>${s.name}</span>`
+  button.innerHTML = `<span class="av" aria-hidden="true"></span><span>${s.name}</span>`
   button.addEventListener('click', () => {
     state.shape = s.id
     resetToneForSelection()
@@ -413,11 +465,12 @@ byId('randomize-palette').addEventListener('click', () => {
   selectCombo(state.shape, p)
 })
 
-themeToggle.addEventListener('click', () => {
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
-  root.setAttribute('data-theme', next)
-  localStorage.setItem(THEME_STORAGE_KEY, next)
-  syncThemeToggle()
+themeSwitchEl.addEventListener('click', event => {
+  const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-theme-value]')
+  if (!button) return
+  const next = button.dataset.themeValue as AvatarAppearance
+  if (next === currentAppearance()) return
+  applyTheme(next, true)
   resetToneForSelection()
   renderGrid()
   refreshShapeButtons()
@@ -477,23 +530,14 @@ initialsInput.addEventListener('input', event => {
   render()
 })
 
-const outputPanel = byId<HTMLDetailsElement>('output-panel')
-function syncOutputPanel(matches: boolean): void {
-  outputPanel.open = !matches
-}
-syncOutputPanel(compactLayout.matches)
-compactLayout.addEventListener('change', event => syncOutputPanel(event.matches))
-
 let activeTab: 'react' | 'core' | 'svg' = 'react'
 ;(function wireSeg() {
   const seg = byId('tab-seg')
   const ind = byId('tab-ind')
   function move(btn: HTMLElement | null): void {
-    if (!btn || !outputPanel.open) return
-    const r = btn.getBoundingClientRect()
-    const pr = seg.getBoundingClientRect()
-    ind.style.width = `${r.width}px`
-    ind.style.transform = `translateX(${r.left - pr.left - 3}px)`
+    if (!btn) return
+    ind.style.width = `${btn.offsetWidth}px`
+    ind.style.transform = `translateX(${btn.offsetLeft - 3}px)`
   }
   function syncTabs(active: HTMLElement): void {
     seg.querySelectorAll<HTMLButtonElement>('.seg-btn').forEach(button => {
@@ -503,6 +547,7 @@ let activeTab: 'react' | 'core' | 'svg' = 'react'
     })
   }
   requestAnimationFrame(() => move(seg.querySelector<HTMLElement>('.seg-btn.active')))
+  document.fonts?.ready.then(() => move(seg.querySelector<HTMLElement>('.seg-btn.active')))
   seg.addEventListener('click', event => {
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.seg-btn')
     if (!button) return
@@ -510,11 +555,6 @@ let activeTab: 'react' | 'core' | 'svg' = 'react'
     move(button)
     activeTab = (button.dataset.tab as 'react' | 'core' | 'svg') ?? 'react'
     render()
-  })
-  outputPanel.addEventListener('toggle', () => {
-    if (outputPanel.open) {
-      requestAnimationFrame(() => move(seg.querySelector<HTMLElement>('.seg-btn.active')))
-    }
   })
   window.addEventListener('resize', () => move(seg.querySelector<HTMLElement>('.seg-btn.active')))
 })()
@@ -616,50 +656,76 @@ const previewAvEl = byId('preview-av')
 const previewShapeEl = byId('preview-shape')
 const previewPalEl = byId('preview-pal')
 const previewIdEl = byId('preview-id')
-const markDotEl = byId('mark-dot')
 const stripEl = byId('strip')
 const codeOutEl = byId('code-out')
 
 export function render(): void {
+  const shapePreset = getShape(state.shape)
+  const palettePreset = getPalette(state.palette)
   const opts = activePreviewOptions(state.shape, avatarDisplaySize('preview'), true)
-  const previewAvatar = renderAvatar({...opts, appearance: currentAppearance(), background: null})
+  const previewAvatar = renderAvatar({
+    ...opts,
+    appearance: currentAppearance(),
+    background: null,
+    title: `${shapePreset.name}, ${palettePreset.name} avatar`,
+  })
   previewAvEl.innerHTML = previewAvatar.svg
-  previewShapeEl.textContent = getShape(state.shape).name
-  previewPalEl.textContent = getPalette(state.palette).name
+  previewShapeEl.textContent = shapePreset.name
+  previewPalEl.textContent = palettePreset.name
   previewIdEl.textContent = `variant ${state.variantId}`
-  markDotEl.innerHTML = imgFor(activePreviewOptions(state.shape, avatarDisplaySize('mark')))
+  activeMiniAvEl.innerHTML = imgFor(activePreviewOptions(state.shape, avatarDisplaySize('mini'), true))
+  activeMiniLabelEl.textContent = `${shapePreset.name} / ${palettePreset.name}`
   const colors = previewAvatar.usedColors
   stripEl.style.gridTemplateColumns = `repeat(${colors.length}, 1fr)`
-  stripEl.innerHTML = colors.map(color => `<i style="background:${color}"></i>`).join('')
+  stripEl.innerHTML = colors.map(color => `<i style="background:${color}" title="${color}"></i>`).join('')
   const out = codeFor(activeTab)
   codeOutEl.innerHTML = out.html
   codeOutEl.dataset.plain = out.plain
 }
 
-const CHECK =
-  '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5 6.5 12 13 4.5"/></svg>'
+const CHECK_ICON =
+  '<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5"/></svg>'
 
-function flash(button: HTMLButtonElement, html: string): void {
-  const original = button.innerHTML
-  button.classList.add('copied')
-  button.innerHTML = html
-  window.setTimeout(() => {
-    button.classList.remove('copied')
-    button.innerHTML = original
-  }, 1300)
+const flashState = new WeakMap<HTMLElement, {original: string; timer: number}>()
+
+function flash(target: HTMLElement, html: string, owner: HTMLElement = target): void {
+  const existing = flashState.get(target)
+  if (existing) {
+    window.clearTimeout(existing.timer)
+  }
+  const original = existing ? existing.original : target.innerHTML
+  owner.classList.add('copied')
+  target.innerHTML = html
+  const timer = window.setTimeout(() => {
+    owner.classList.remove('copied')
+    target.innerHTML = original
+    flashState.delete(target)
+  }, 1400)
+  flashState.set(target, {original, timer})
+}
+
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    return false
+  }
 }
 
 const codeCopyBtn = byId<HTMLButtonElement>('code-copy')
-codeCopyBtn.addEventListener('click', () => {
-  navigator.clipboard.writeText(codeOutEl.dataset.plain ?? '')
-  flash(codeCopyBtn, `${CHECK}Copied`)
+codeCopyBtn.addEventListener('click', async () => {
+  if (await copyText(codeOutEl.dataset.plain ?? '')) {
+    flash(codeCopyBtn, `${CHECK_ICON}<span>Copied</span>`)
+  }
 })
 
 const cmdBtn = byId<HTMLButtonElement>('cmd')
-cmdBtn.addEventListener('click', () => {
-  navigator.clipboard.writeText(`npm i ${PACKAGE_NAME}`)
-  cmdBtn.classList.add('copied')
-  window.setTimeout(() => cmdBtn.classList.remove('copied'), 1300)
+const cmdIco = byId('cmd-ico')
+cmdBtn.addEventListener('click', async () => {
+  if (await copyText(`npm i ${PACKAGE_NAME}`)) {
+    flash(cmdIco, CHECK_ICON, cmdBtn)
+  }
 })
 
 function downloadBlob(blob: Blob, filename: string): void {
@@ -686,7 +752,7 @@ function rasterizeSvg(svg: string, size: number, format: 'png' | 'jpg'): Promise
         const context = canvas.getContext('2d')
         if (!context) throw new Error('Canvas is unavailable')
         if (format === 'jpg') {
-          context.fillStyle = currentAppearance() === 'dark' ? '#0b0b0d' : '#ffffff'
+          context.fillStyle = currentAppearance() === 'dark' ? '#04080c' : '#ffffff'
           context.fillRect(0, 0, size, size)
         }
         context.drawImage(image, 0, 0, size, size)
@@ -720,7 +786,7 @@ downloadBtn.addEventListener('click', async () => {
   const format = exportFormatSelect.value as 'svg' | 'png' | 'jpg'
   const size = Number(exportSizeSelect.value)
   const appearance = currentAppearance()
-  const background = format === 'jpg' ? (appearance === 'dark' ? '#0b0b0d' : '#ffffff') : null
+  const background = format === 'jpg' ? (appearance === 'dark' ? '#04080c' : '#ffffff') : null
   const svg = renderAvatar({
     ...activePreviewOptions(state.shape, size, true),
     appearance,
@@ -734,10 +800,10 @@ downloadBtn.addEventListener('click', async () => {
     } else {
       downloadBlob(await rasterizeSvg(svg, size, format), filename)
     }
-    flash(downloadBtn, `${CHECK}Saved`)
+    flash(downloadBtn, `${CHECK_ICON}<span>Saved</span>`)
   } catch (error) {
     console.error(error)
-    flash(downloadBtn, 'Export failed')
+    flash(downloadBtn, '<span>Export failed</span>')
   } finally {
     downloadBtn.disabled = false
   }
